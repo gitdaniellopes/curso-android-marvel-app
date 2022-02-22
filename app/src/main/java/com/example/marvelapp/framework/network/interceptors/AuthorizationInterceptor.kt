@@ -18,7 +18,7 @@ class AuthorizationInterceptor(
         val requestUrl = request.url
 
         val ts = (calendar.timeInMillis / 1000L).toString()//time in seconds
-        val hash = "$ts$privateKey$privateKey".md5()
+        val hash = "$ts$privateKey$publicKey".md5()
         val newUrl = requestUrl.newBuilder()
             .addQueryParameter(QUERY_PARAMETER_TS, ts)
             .addQueryParameter(QUERY_PARAMETER_API_KEY, publicKey)
