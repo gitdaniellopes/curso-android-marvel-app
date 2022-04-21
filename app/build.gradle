@@ -17,6 +17,15 @@ android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
+    signingConfigs {
+        release {
+            storeFile file('D:\\MeusCursos\\Android\\douglas_mota\\curso-android-marvel-app\\store\\marvel_app_key_store.jks')
+            storePassword 'marvel@123'
+            keyAlias 'marvel-app'
+            keyPassword 'marvel@123'
+        }
+    }
+
     defaultConfig {
         applicationId "com.example.marvelapp"
         minSdkVersion 23
@@ -32,8 +41,41 @@ android {
     }
 
     buildTypes {
+        /**
+         * Para aplicativos profissionais, sempre temos que tr pelo menos essas tres builds
+         * Debug - vamos usar ela para trabalhar com o nosso projeto, fazer testes e execuções de forma rapida;
+         *  - applicationIdSuffix '.debug' - para eu conseguir identificar a nivel de application id, qual é o build type de release, debug e afins
+         *  - debuggable true - para conseguimos colocar os breakPoints
+         *
+         * Staging - Esse é para dar a ideia de pré produção, uma versão que deve ser testada antes de ir para produção
+         * Geralmente, a equipe de QA, os testadores, vão usar essa versão para poder fazer os testes necessarios.
+         *  - initWith debug - Colocamos isso por que a release de staging não é debugavel,
+         *      com essa configuração fazemos com que o staging emita o funcionamento do debug.
+         *      depois, precisamos fazer uma regra no proguard, para ele permitir o debug nessa build de staging
+         *      (criamos um outro proguard no modulo app)
+         *
+         *  - minifyEnabled true - para ofuscar nosso codigo.
+         *  - applicationIdSuffix '.staging' - para eu conseguir identificar a nivel de application id, qual é o build type de release, debug e afins
+         *
+         *  Release -
+         *  - minifyEnabled true - para ofuscar nosso codigo.
+         *  - shrinkResources true - para otimizar nosso codigo
+         * */
+        debug {
+            applicationIdSuffix '.debug'
+            debuggable true
+        }
+        staging {
+            initWith debug
+            minifyEnabled true
+            applicationIdSuffix '.staging'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro',
+                    'proguard-rules-staging.pro'
+        }
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
