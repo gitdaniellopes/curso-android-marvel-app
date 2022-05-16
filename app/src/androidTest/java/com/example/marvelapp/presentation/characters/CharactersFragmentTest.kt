@@ -47,6 +47,12 @@ class CharactersFragmentTest {
     fun shouldShowCharacters_whenViewIsCreated() {
         server.enqueue(MockResponse().setBody("characters_p1.json".asJsonString()))
 
+        /*
+        *   ViewMatchers permitem encontrar a visão na hierarquia de visão atual
+            ViewActions permitem realizar ações nas visualizações
+            ViewAssertions permitem afirmar o estado de uma visão
+        * */
+
         //Em uma view que tem um id com recycleView, check, verifica, faça alguma asserção.
         //Verificamos se a view casa com o isDisplayed, verificamos se a recycleview no momento que a view for criada,
         //ela vai estar visivel.
