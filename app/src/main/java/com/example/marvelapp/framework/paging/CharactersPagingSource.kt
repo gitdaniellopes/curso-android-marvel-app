@@ -4,11 +4,10 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import br.com.core.data.repository.CharactersRemoteDataSource
 import br.com.core.domain.model.Character
-import com.example.marvelapp.framework.network.response.DataWrapperResponse
-import com.example.marvelapp.framework.network.response.toCharacterModel
+import br.com.core.domain.model.CharacterPaging
 
 class CharactersPagingSource(
-    private val remoteDataSource: CharactersRemoteDataSource<DataWrapperResponse>,
+    private val remoteDataSource: CharactersRemoteDataSource,
     private val query: String
 ) : PagingSource<Int, Character>() {
 
@@ -22,14 +21,12 @@ class CharactersPagingSource(
             if (query.isNotEmpty()) {
                 queries["nameStartsWith"] = query
             }
-            val response = remoteDataSource.fetchCharacters(queries)
-            val responseOffset = response.data.offset
-            val totalCharacters = response.data.total
+            val characterPaging: CharacterPaging = remoteDataSource.fetchCharacters(queries)
+            val responseOffset = characterPaging.offset
+            val totalCharacters = characterPaging.total
 
             LoadResult.Page(
-                data = response.data.results.map { characterResponse ->
-                    characterResponse.toCharacterModel()
-                },
+                data = characterPaging.characters,
                 prevKey = null,
                 nextKey = if (responseOffset < totalCharacters) {
                     responseOffset + LIMIT

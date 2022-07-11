@@ -7,9 +7,9 @@ import com.google.gson.annotations.SerializedName
  * dessa forma, ele pode colocar o nome de atributo como A, que ele vai olhar @SerializedName contento o nome da propriedade que vem da API.
  * */
 
-data class DataWrapperResponse(
+data class DataWrapperResponse<T>(
     @SerializedName("copyright")
     val copyright: String,
     @SerializedName("data")
-    val data: DataContainerResponse
+    val data: DataContainerResponse<T>
 )
