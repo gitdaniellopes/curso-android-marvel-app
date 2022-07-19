@@ -6,6 +6,7 @@ import br.com.core.domain.model.Character
 import br.com.testing.MainCoroutineRule
 import br.com.testing.model.CharacterFactory
 import com.example.marvelapp.factory.response.DataWrapperResponseFactory
+import com.example.marvelapp.framework.network.response.CharacterResponse
 import com.example.marvelapp.framework.network.response.DataWrapperResponse
 import com.google.common.truth.ExpectFailure
 import com.nhaarman.mockitokotlin2.any
@@ -58,8 +59,9 @@ class CharactersPagingSourceTest {
     fun `should return a success load result when load is called`() = runBlockingTest {
 
         //Arrange
+        val create: DataWrapperResponse<CharacterResponse> = dataWrapperResponseFactory.create()
         whenever(remoteDataSource.fetchCharacters(any()))
-            .thenReturn(dataWrapperResponseFactory.create())
+            .thenReturn(create)
 
         //Act
         val result = charactersPagingSource.load(
