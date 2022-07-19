@@ -5,15 +5,11 @@ import br.com.core.data.repository.CharactersRepository
 import br.com.testing.MainCoroutineRule
 import br.com.testing.model.CharacterFactory
 import br.com.testing.pagingsource.PagingSourceFactory
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
@@ -22,10 +18,10 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
+@ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class GetCharactersUseCaseImplTest {
-
-    @ExperimentalCoroutinesApi
+    
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -48,7 +44,7 @@ class GetCharactersUseCaseImplTest {
         getCharactersUseCase = GetCharactersUseCaseImpl(repository)
     }
 
-    @ExperimentalCoroutinesApi
+
     @Test
     fun `should validate flow paging data creation when invoke from use case is called`() =
         runBlockingTest {
@@ -61,6 +57,6 @@ class GetCharactersUseCaseImplTest {
             )
             verify(repository).getCharacters("")
 
-            assertNotNull( result.first())
+            assertNotNull(result.first())
         }
 }

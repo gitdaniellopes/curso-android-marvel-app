@@ -5,10 +5,7 @@ import br.com.core.data.repository.CharactersRemoteDataSource
 import br.com.core.domain.model.Character
 import br.com.testing.MainCoroutineRule
 import br.com.testing.model.CharacterFactory
-import com.example.marvelapp.factory.response.DataWrapperResponseFactory
-import com.example.marvelapp.framework.network.response.CharacterResponse
-import com.example.marvelapp.framework.network.response.DataWrapperResponse
-import com.google.common.truth.ExpectFailure
+import com.example.marvelapp.factory.response.CharacterPagingFactory
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,17 +22,16 @@ import org.mockito.junit.MockitoJUnitRunner
 @RunWith(MockitoJUnitRunner::class)
 class CharactersPagingSourceTest {
 
-    @ExperimentalCoroutinesApi
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
     //mokando o repositorio para satisfazer a dependencia do CharactersPagingSource
     @Mock
-    lateinit var remoteDataSource: CharactersRemoteDataSource<DataWrapperResponse>
+    lateinit var remoteDataSource: CharactersRemoteDataSource
 
     private val characterFactory = CharacterFactory()
 
-    private val dataWrapperResponseFactory = DataWrapperResponseFactory()
+    private val characterPagingFactory = CharacterPagingFactory()
 
     // o que eu quero testar
     private lateinit var charactersPagingSource: CharactersPagingSource
@@ -59,7 +55,7 @@ class CharactersPagingSourceTest {
     fun `should return a success load result when load is called`() = runBlockingTest {
 
         //Arrange
-        val create: DataWrapperResponse<CharacterResponse> = dataWrapperResponseFactory.create()
+        val create = characterPagingFactory.create()
         whenever(remoteDataSource.fetchCharacters(any()))
             .thenReturn(create)
 
