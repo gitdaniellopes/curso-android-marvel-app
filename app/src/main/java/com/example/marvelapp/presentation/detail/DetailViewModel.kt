@@ -23,7 +23,12 @@ class DetailViewModel @Inject constructor(
     val uiState: LiveData<UiState> = _uiState
 
     fun getCharacterCategories(characterId: Int) = viewModelScope.launch {
-        getCharacterCategoriesUseCase(GetCharacterCategoriesUseCase.GetComicsParams(characterId = characterId)).watchStatus()
+        getCharacterCategoriesUseCase
+            .invoke(
+                GetCharacterCategoriesUseCase
+                    .GetCategoriesParams(characterId = characterId)
+            )
+            .watchStatus()
     }
 
     private fun Flow<ResultStatus<Pair<List<Comic>, List<Event>>>>.watchStatus() =
@@ -68,7 +73,7 @@ class DetailViewModel @Inject constructor(
 
     sealed class UiState {
         object Loading : UiState()
-        data class Success(val detailParentVE: List<DetailParentVE>) : UiState()
+        data class Success(val detailParentList: List<DetailParentVE>) : UiState()
         object Error : UiState()
         object Empty : UiState()
     }

@@ -5,7 +5,7 @@ buildscript {
     ext.hilt_version = '2.41'
     ext.detekt_version = '1.19.0'
     ext.paging_version = '3.1.1'
-    ext.coroutines_version = '1.6.0'
+    ext.coroutines_version = '1.6.1'
     repositories {
         google()
         mavenCentral()

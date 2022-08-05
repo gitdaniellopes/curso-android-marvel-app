@@ -52,7 +52,7 @@ class DetailFragment : Fragment() {
                 is DetailViewModel.UiState.Success -> {
                     binding.recycleParentDetail.run {
                         setHasFixedSize(true)
-                        adapter = DetailParentAdapter(uiState.detailParentVE, imageLoader)
+                        adapter = DetailParentAdapter(uiState.detailParentList, imageLoader)
                     }
                     FLIPPER_CHILD_POSITION_DETAIL
                 }
