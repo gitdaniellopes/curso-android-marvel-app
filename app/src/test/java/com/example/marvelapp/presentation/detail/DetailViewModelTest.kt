@@ -3,6 +3,7 @@ package com.example.marvelapp.presentation.detail
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import br.com.core.domain.model.Comic
+import br.com.core.usecase.AddFavoriteUseCase
 import br.com.core.usecase.GetCharacterCategoriesUseCase
 import br.com.core.usecase.base.ResultStatus
 import br.com.testing.MainCoroutineRule
@@ -39,7 +40,10 @@ class DetailViewModelTest {
     lateinit var getCharacterCategoriesUseCase: GetCharacterCategoriesUseCase
 
     @Mock
-    private lateinit var uiStateObserver: Observer<DetailViewModel.UiState>
+    lateinit var addFavoriteUseCase: AddFavoriteUseCase
+
+    @Mock
+    private lateinit var uiStateObserver: Observer<UiActionStateLiveData.UiState>
 
     private lateinit var detailViewModel: DetailViewModel
 
@@ -50,10 +54,13 @@ class DetailViewModelTest {
     @Before
     fun setup() {
         detailViewModel = DetailViewModel(
-            getCharacterCategoriesUseCase = getCharacterCategoriesUseCase
-        )
-        //observeForever - utilizado para fins de teste
-        detailViewModel.uiState.observeForever(uiStateObserver)
+            getCharacterCategoriesUseCase = getCharacterCategoriesUseCase,
+            addFavoriteUseCase = addFavoriteUseCase,
+            coroutinesDispatchers = mainCoroutineRule.testDispatcherProvider
+        ).apply {
+            //observeForever - utilizado para fins de teste
+            categories.state.observeForever(uiStateObserver)
+        }
     }
 
     @Test
@@ -72,15 +79,15 @@ class DetailViewModelTest {
                 )
 
             //Act
-            detailViewModel.getCharacterCategories(character.id)
+            detailViewModel.categories.load(character.id)
 
             //Assert
 
             //utilizamos isA, quando temos um objeto que é o Success, por que temos que criar instancia dele.
             //então utilizamos o isA, ele vai verificar a instancia do objeto passado entre <>
-            verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Success>())
+            verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Success>())
 
-            val uiStateSuccess = detailViewModel.uiState.value as DetailViewModel.UiState.Success
+            val uiStateSuccess = detailViewModel.categories.state.value as UiActionStateLiveData.UiState.Success
             val categoriesParentList = uiStateSuccess.detailParentList
 
             assertEquals(2, categoriesParentList.size)
@@ -96,94 +103,97 @@ class DetailViewModelTest {
         }
 
     @Test
-    fun `should notify uiState with Success from UiState when get character categories returns only comics`() = runTest() {
-        //Arrange
+    fun `should notify uiState with Success from UiState when get character categories returns only comics`() =
+        runTest() {
+            //Arrange
 
-        //sempre que o meu getCharacterCategoriesUseCase for chamada, vou retornar
-        whenever(getCharacterCategoriesUseCase.invoke(any()))
-            .thenReturn(
-                flowOf(
-                    ResultStatus.Success(
-                        comics to emptyList()
+            //sempre que o meu getCharacterCategoriesUseCase for chamada, vou retornar
+            whenever(getCharacterCategoriesUseCase.invoke(any()))
+                .thenReturn(
+                    flowOf(
+                        ResultStatus.Success(
+                            comics to emptyList()
+                        )
                     )
                 )
+
+            //Act
+            detailViewModel.categories.load(character.id)
+
+            //Assert
+
+            //utilizamos isA, quando temos um objeto que é o Success, por que temos que criar instancia dele.
+            //então utilizamos o isA, ele vai verificar a instancia do objeto passado entre <>
+            verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Success>())
+
+            val uiStateSuccess = detailViewModel.categories.state.value as UiActionStateLiveData.UiState.Success
+            val categoriesParentList = uiStateSuccess.detailParentList
+
+            assertEquals(1, categoriesParentList.size)
+            assertEquals(
+                R.string.details_comics_category,
+                categoriesParentList[0].categoryStringResId
             )
-
-        //Act
-        detailViewModel.getCharacterCategories(character.id)
-
-        //Assert
-
-        //utilizamos isA, quando temos um objeto que é o Success, por que temos que criar instancia dele.
-        //então utilizamos o isA, ele vai verificar a instancia do objeto passado entre <>
-        verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Success>())
-
-        val uiStateSuccess = detailViewModel.uiState.value as DetailViewModel.UiState.Success
-        val categoriesParentList = uiStateSuccess.detailParentList
-
-        assertEquals(1, categoriesParentList.size)
-        assertEquals(
-            R.string.details_comics_category,
-            categoriesParentList[0].categoryStringResId
-        )
-    }
+        }
 
     @Test
-    fun `should notify uiState with Success from UiState when get character categories returns only events`() = runTest{
-        //Arrange
+    fun `should notify uiState with Success from UiState when get character categories returns only events`() =
+        runTest {
+            //Arrange
 
-        //sempre que o meu getCharacterCategoriesUseCase for chamada, vou retornar
-        whenever(getCharacterCategoriesUseCase.invoke(any()))
-            .thenReturn(
-                flowOf(
-                    ResultStatus.Success(
-                        emptyList<Comic>() to events
+            //sempre que o meu getCharacterCategoriesUseCase for chamada, vou retornar
+            whenever(getCharacterCategoriesUseCase.invoke(any()))
+                .thenReturn(
+                    flowOf(
+                        ResultStatus.Success(
+                            emptyList<Comic>() to events
+                        )
                     )
                 )
+
+            //Act
+            detailViewModel.categories.load(character.id)
+
+            //Assert
+
+            //utilizamos isA, quando temos um objeto que é o Success, por que temos que criar instancia dele.
+            //então utilizamos o isA, ele vai verificar a instancia do objeto passado entre <>
+            verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Success>())
+
+            val uiStateSuccess = detailViewModel.categories.state.value as UiActionStateLiveData.UiState.Success
+            val categoriesParentList = uiStateSuccess.detailParentList
+
+            assertEquals(1, categoriesParentList.size)
+            assertEquals(
+                R.string.details_events_category,
+                categoriesParentList[0].categoryStringResId
             )
-
-        //Act
-        detailViewModel.getCharacterCategories(character.id)
-
-        //Assert
-
-        //utilizamos isA, quando temos um objeto que é o Success, por que temos que criar instancia dele.
-        //então utilizamos o isA, ele vai verificar a instancia do objeto passado entre <>
-        verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Success>())
-
-        val uiStateSuccess = detailViewModel.uiState.value as DetailViewModel.UiState.Success
-        val categoriesParentList = uiStateSuccess.detailParentList
-
-        assertEquals(1, categoriesParentList.size)
-        assertEquals(
-            R.string.details_events_category,
-            categoriesParentList[0].categoryStringResId
-        )
-    }
+        }
 
     @Test
-    fun `should notify uiState with Empty from UiState when get character categories returns an empty result list`() = runTest{
-        //Arrange
+    fun `should notify uiState with Empty from UiState when get character categories returns an empty result list`() =
+        runTest {
+            //Arrange
 
-        //sempre que o meu getCharacterCategoriesUseCase for chamada, vou retornar
-        whenever(getCharacterCategoriesUseCase.invoke(any()))
-            .thenReturn(
-                flowOf(
-                    ResultStatus.Success(
-                        emptyList<Comic>() to emptyList()
+            //sempre que o meu getCharacterCategoriesUseCase for chamada, vou retornar
+            whenever(getCharacterCategoriesUseCase.invoke(any()))
+                .thenReturn(
+                    flowOf(
+                        ResultStatus.Success(
+                            emptyList<Comic>() to emptyList()
+                        )
                     )
                 )
-            )
 
-        //Act
-        detailViewModel.getCharacterCategories(character.id)
+            //Act
+            detailViewModel.categories.load(character.id)
 
-        //Assert
+            //Assert
 
-        //utilizamos isA, quando temos um objeto que é o Success, por que temos que criar instancia dele.
-        //então utilizamos o isA, ele vai verificar a instancia do objeto passado entre <>
-        verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Empty>())
-    }
+            //utilizamos isA, quando temos um objeto que é o Success, por que temos que criar instancia dele.
+            //então utilizamos o isA, ele vai verificar a instancia do objeto passado entre <>
+            verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Empty>())
+        }
 
     @Test
     fun `should notify uiState with Error from UiState when get character categories returns an exception`() {
@@ -200,12 +210,12 @@ class DetailViewModelTest {
             )
 
         //Act
-        detailViewModel.getCharacterCategories(character.id)
+        detailViewModel.categories.load(character.id)
 
         //Assert
 
         //utilizamos isA, quando temos um objeto que é o Success, por que temos que criar instancia dele.
         //então utilizamos o isA, ele vai verificar a instancia do objeto passado entre <>
-        verify(uiStateObserver).onChanged(isA<DetailViewModel.UiState.Error>())
+        verify(uiStateObserver).onChanged(isA<UiActionStateLiveData.UiState.Error>())
     }
 }

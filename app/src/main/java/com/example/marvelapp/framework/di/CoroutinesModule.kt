@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 @InstallIn(SingletonComponent::class)
 interface CoroutinesModule {
 
-    // Quando açguem precisar de um CoroutinesDispatchers, eu vou injetar para ele
+    // Quando alguem precisar de um CoroutinesDispatchers, eu vou injetar para ele
     // dispatchers: AppCoroutinesDispatchers
 
     @Binds
