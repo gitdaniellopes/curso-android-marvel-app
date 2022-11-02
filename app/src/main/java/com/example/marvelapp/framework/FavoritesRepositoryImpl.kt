@@ -12,6 +12,9 @@ class FavoritesRepositoryImpl @Inject constructor(
     override fun getAll(): Flow<List<Character>> =
         favoritesLocalDataSource.getAll()
 
+    override suspend fun isFavorite(characterId: Int): Boolean =
+        favoritesLocalDataSource.isFavorite(characterId)
+
     override suspend fun saveFavorite(character: Character) =
         favoritesLocalDataSource.save(character)
 
