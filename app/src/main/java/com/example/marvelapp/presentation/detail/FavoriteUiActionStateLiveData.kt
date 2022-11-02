@@ -2,6 +2,7 @@ package com.example.marvelapp.presentation.detail
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataScope
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +15,7 @@ import com.example.marvelapp.R
 import com.example.marvelapp.presentation.extensions.watchStatus
 import kotlin.coroutines.CoroutineContext
 
+
 class FavoriteUiActionStateLiveData(
     private val coroutineContext: CoroutineContext,
     private val checkFavoriteUseCase: CheckFavoriteUseCase,
@@ -21,7 +23,11 @@ class FavoriteUiActionStateLiveData(
     private val removeFavoriteUseCase: RemoveFavoriteUseCase
 ) {
 
-    private var currentFavoriteIcon = R.drawable.ic_favorite_unchecked
+    //Dessa forma, essa anotação vai me alertar quando alguem tentar alterar ela fora daqui
+    // Assim posso utilizar ela em nosso teste
+
+    @set:VisibleForTesting
+    var currentFavoriteIcon = R.drawable.ic_favorite_unchecked
 
     private val action = MutableLiveData<Action>()
     val state: LiveData<UiState> = action.switchMap {

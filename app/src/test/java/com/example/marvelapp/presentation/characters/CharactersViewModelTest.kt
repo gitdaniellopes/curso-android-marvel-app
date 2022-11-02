@@ -57,7 +57,10 @@ class CharactersViewModelTest {
     // essa função vai ser chamada antes de cada função de teste ser chamada
     @Before
     fun setup() {
-        charactersViewModel = CharactersViewModel(getCharactersUseCase)
+        charactersViewModel = CharactersViewModel(
+            getCharactersUseCase,
+            mainCoroutineRule.testDispatcherProvider
+        )
     }
 
     //validando a comunicação entre viewModel e useCase
