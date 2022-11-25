@@ -37,4 +37,5 @@
     <!-- About -->
     <string name="about_screen_title">About</string>
     <string name="about_attribution">Data provided by Marvel. © 2021 Marvel</string>
+    <string name="favorites_no_favorites_in_the_list">no heroes in the favorite list</string>
 </resources>
