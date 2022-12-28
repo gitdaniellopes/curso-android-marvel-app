@@ -8,6 +8,8 @@ import br.com.core.usecase.GetCharacterCategoriesUseCase
 import br.com.core.usecase.GetCharacterCategoriesUseCaseImpl
 import br.com.core.usecase.GetCharactersUseCase
 import br.com.core.usecase.GetCharactersUseCaseImpl
+import br.com.core.usecase.GetFavoritesUseCase
+import br.com.core.usecase.GetFavoritesUseCaseImpl
 import br.com.core.usecase.RemoveFavoriteUseCase
 import br.com.core.usecase.RemoveFavoriteUseCaseImpl
 import dagger.Binds
@@ -20,7 +22,9 @@ import dagger.hilt.android.components.ViewModelComponent
 interface UseCaseModule {
 
     @Binds
-    fun bindGetCharactersUseCase(useCase: GetCharactersUseCaseImpl): GetCharactersUseCase
+    fun bindGetCharactersUseCase(
+        useCase: GetCharactersUseCaseImpl
+    ): GetCharactersUseCase
 
     @Binds
     fun bindGetComicsUseCase(
@@ -41,4 +45,9 @@ interface UseCaseModule {
     fun bindRemoveFavoriteUseCase(
         useCaseImpl: RemoveFavoriteUseCaseImpl
     ): RemoveFavoriteUseCase
+
+    @Binds
+    fun bindGetFavoritesUseCase(
+        useCase: GetFavoritesUseCaseImpl
+    ): GetFavoritesUseCase
 }
