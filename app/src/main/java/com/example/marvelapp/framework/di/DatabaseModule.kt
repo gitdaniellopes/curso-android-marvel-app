@@ -23,8 +23,10 @@ object DatabaseModule {
             DbConstants.APP_DATABASE_NAME
         ).build()
 
+
     @Provides
-    fun provideDao(appDatabase: AppDatabase): FavoriteDao {
-        return appDatabase.favoriteDao()
-    }
+    fun provideFavoriteDao(appDatabase: AppDatabase) = appDatabase.favoriteDao()
+
+    @Provides
+    fun provideCharacterDao(appDatabase: AppDatabase) = appDatabase.characterDao()
 }
