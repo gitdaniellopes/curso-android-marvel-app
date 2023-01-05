@@ -1,12 +1,11 @@
 package com.example.marvelapp.presentation.characters
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -29,16 +28,17 @@ class CharactersViewModel @Inject constructor(
     coroutinesDispatchers: CoroutinesDispatchers
 ) : ViewModel() {
 
+    var currentSearchQuery = ""
+
     private val action = MutableLiveData<Action>()
     val state: LiveData<UiState> = action
-        .distinctUntilChanged()
         .switchMap { action ->
             when (action) {
-                is Action.Search -> {
+                is Action.Search, Action.Sort -> {
                     getCharactersUseCase(
                         params =
                         GetCharactersUseCase.GetCharactersParams(
-                            query = action.query,
+                            query = currentSearchQuery,
                             pagingConfig = getPagingConfig()
                         )
                     ).cachedIn(viewModelScope).map { pagingData ->
@@ -62,8 +62,18 @@ class CharactersViewModel @Inject constructor(
         pageSize = 20
     )
 
-    fun searchCharacters(query: String = "") {
-        action.value = Action.Search(query)
+    fun searchCharacters() {
+        action.value = Action.Search
+    }
+
+    fun applySort() {
+        action.value = Action.Sort
+    }
+
+    fun closeSearch() {
+        if (currentSearchQuery.isNotEmpty()) {
+            currentSearchQuery = ""
+        }
     }
 
     sealed class UiState {
@@ -71,6 +81,7 @@ class CharactersViewModel @Inject constructor(
     }
 
     sealed class Action {
-        data class Search(val query: String) : Action()
+        object Search : Action()
+        object Sort : Action()
     }
 }
