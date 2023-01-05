@@ -1,5 +1,7 @@
 package com.example.marvelapp.presentation.characters
 
+import androidx.navigation.testing.TestNavHostController
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -14,6 +16,8 @@ import com.example.marvelapp.presentation.characters.adapters.CharactersViewHold
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -34,6 +38,10 @@ class CharactersFragmentTest {
 
     private lateinit var server: MockWebServer
 
+    private val navController = TestNavHostController(
+        ApplicationProvider.getApplicationContext()
+    )
+
     //Primeiramente iniciar o fragmento de teste de forma isolada
     //fragmento vai ser iniciado antes dos testes que eu tiver
     @Before
@@ -41,13 +49,17 @@ class CharactersFragmentTest {
         server = MockWebServer().apply {
             start(port = 8080)
         }
-        launchFragmentInHiltContainer<CharactersFragment>()
+        launchFragmentInHiltContainer<CharactersFragment>(
+            navHostController = navController
+        )
     }
 
     //Vamos testar se vai ser exbido os personagens quando ela for criada.
     @Test
-    fun shouldShowCharacters_whenViewIsCreated() {
+    fun shouldShowCharacters_whenViewIsCreated(): Unit = runBlocking {
         server.enqueue(MockResponse().setBody("characters_p1.json".asJsonString()))
+
+        delay(500)
 
         /*
         *   ViewMatchers permitem encontrar a visão na hierarquia de visão atual
@@ -66,14 +78,14 @@ class CharactersFragmentTest {
     }
 
     @Test
-    fun shouldLoadMoreCharacters_whenNewPageIsRequested() {
+    fun shouldLoadMoreCharacters_whenNewPageIsRequested(): Unit = runBlocking {
 
         //Arrange
         with(server) {
             enqueue(MockResponse().setBody("characters_p1.json".asJsonString()))
             enqueue(MockResponse().setBody("characters_p2.json".asJsonString()))
         }
-
+        delay(500)
         // Action
         // Nesse recycleView que contem tal id, execure uma ação nele
         onView(
@@ -92,9 +104,11 @@ class CharactersFragmentTest {
     }
 
     @Test
-    fun shouldShowErrorView_whenReceivesAnErrorFromApi() {
+    fun shouldShowErrorView_whenReceivesAnErrorFromApi(): Unit = runBlocking {
         //Arrange
         server.enqueue(MockResponse().setResponseCode(404))
+
+        delay(500)
 
         //Assert
         onView(

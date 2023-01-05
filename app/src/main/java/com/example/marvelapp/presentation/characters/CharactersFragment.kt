@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -31,7 +32,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CharactersFragment : Fragment(), SearchView.OnQueryTextListener,
+class CharactersFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener,
     MenuItem.OnActionExpandListener {
 
     private var _binding: FragmentCharactersBinding? = null
@@ -68,11 +69,6 @@ class CharactersFragment : Fragment(), SearchView.OnQueryTextListener,
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -86,6 +82,9 @@ class CharactersFragment : Fragment(), SearchView.OnQueryTextListener,
         initCharactersAdapter()
         observerInitialLoadingState()
         observeSortingData()
+
+        val menuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         viewModel.state.observe(viewLifecycleOwner) { uiState ->
             when (uiState) {
@@ -192,8 +191,8 @@ class CharactersFragment : Fragment(), SearchView.OnQueryTextListener,
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.characters_menu_itens, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.characters_menu_itens, menu)
 
         val searchItem = menu.findItem(R.id.menu_search)
         searchView = searchItem.actionView as SearchView
@@ -211,15 +210,14 @@ class CharactersFragment : Fragment(), SearchView.OnQueryTextListener,
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        return when (item.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
             R.id.menu_sort -> {
                 findNavController().navigate(R.id.action_charactersFragment_to_sortFragment)
                 true
             }
             else -> {
-                return super.onOptionsItemSelected(item)
+                false
             }
         }
     }
@@ -236,11 +234,11 @@ class CharactersFragment : Fragment(), SearchView.OnQueryTextListener,
         return true
     }
 
-    override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         return true
     }
 
-    override fun onMenuItemActionCollapse(menu: MenuItem?): Boolean {
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
         viewModel.closeSearch()
         viewModel.searchCharacters()
         return true
@@ -257,4 +255,5 @@ class CharactersFragment : Fragment(), SearchView.OnQueryTextListener,
         private const val FLIPPER_CHILD_CHARACTERS = 1
         private const val FLIPPER_CHILD_ERROR = 2
     }
+
 }
