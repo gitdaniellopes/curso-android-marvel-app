@@ -7,11 +7,9 @@ import br.com.testing.model.CharacterFactory
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertEquals
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
@@ -24,6 +22,7 @@ import org.mockito.junit.MockitoJUnitRunner
  * MockitoJUnitRunner, ele que vai executar os nossos testes.
  * */
 
+@ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class CharactersViewModelTest {
 
@@ -35,7 +34,7 @@ class CharactersViewModelTest {
 
      agora estamos usando uma regra unica de uma funcao no modulo testing, para evitar fazer isso em cada teste
      */
-    @ExperimentalCoroutinesApi
+
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -56,17 +55,15 @@ class CharactersViewModelTest {
     )
 
     // essa função vai ser chamada antes de cada função de teste ser chamada
-    @ExperimentalCoroutinesApi
     @Before
     fun setup() {
         charactersViewModel = CharactersViewModel(getCharactersUseCase)
     }
 
     //validando a comunicação entre viewModel e useCase
-    @ExperimentalCoroutinesApi
     @Test
     fun `should validate the paging data object values when calling charactersPagingData`() =
-        runBlockingTest {
+        runTest {
 
             //quando chamar o meu getCharactersUseCase, para qualquer valor que seja passado no meu invoke, eu consigo fazer essa validação depois
             // não necessariamente preciso passar os parametros que o invoke precisa, uma forma de facilitar a vida, usando o any()
@@ -90,10 +87,9 @@ class CharactersViewModelTest {
 //            }
         }
 
-    @ExperimentalCoroutinesApi
     @Test(expected = RuntimeException::class)
     fun `should throw an exception when the calling to the use case returns an exception`() =
-        runBlockingTest {
+        runTest {
 
             //quando chamar o meu getCharactersUseCase, para qualquer valor que seja passado no meu invoke, eu consigo fazer essa validação depois
             // não necessariamente preciso passar os parametros que o invoke precisa, uma forma de facilitar a vida, usando o any()

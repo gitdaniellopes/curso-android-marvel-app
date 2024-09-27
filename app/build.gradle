@@ -48,6 +48,8 @@ android {
 
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        //desatina as animações do app para o teste ficar mais rapido.
+        animationsDisabled = true
     }
 
     buildTypes {
@@ -178,4 +180,6 @@ dependencies {
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     androidTestImplementation 'com.squareup.okhttp3:mockwebserver:4.9.3'
+
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
 }
